@@ -18,6 +18,7 @@ export default defineStore(
     };
 
     return {
+      userData,
       user,
       access_token,
       setAccessToken,

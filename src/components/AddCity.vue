@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { $API } from 'src/plugins/api';
 import { ResponseType } from 'src/types/query.type';
 import { City } from 'src/types/city.interface';
+import { Notify } from 'quasar';
 
 interface Emit {
   (event: 'add-city'): void;
@@ -26,6 +27,11 @@ const addCity = () => {
     (response: ResponseType<City>) => {
       isLoading.value = false;
       emit('add-city');
+      Notify.create({
+        message: '☺️ Город успешно добавлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       isLoading.value = false;
@@ -55,7 +61,7 @@ const addCity = () => {
       :disable="isLoading"
       class="add__input"
       dense
-      label="Минимальная"
+      label="Минимальная стоимость"
       outlined
       @keyup.enter="addCity"
     />
@@ -63,7 +69,7 @@ const addCity = () => {
       :disable="isLoading || !name || !minPrice"
       class="add__button full-width q-mt-sm"
       color="primary"
-      label="Изменить"
+      label="Добавить"
       standout
       unelevated
       @click.stop="addCity"

@@ -171,6 +171,66 @@ export const columnsTableAppeal = <QTableColumn[]>[
   },
 ];
 
+export const columnsTableStatsByCity = <QTableColumn[]>[
+  {
+    name: 'name',
+    label: 'Название города',
+    align: 'left',
+    field: 'name',
+    sortable: true,
+  },
+  {
+    name: 'totalPrice',
+    label: 'Стоимость поездок',
+    align: 'left',
+    field: 'totalPrice',
+    sortable: true,
+  },
+  {
+    name: 'totalCommission',
+    label: 'Всего заработано',
+    align: 'left',
+    field: 'totalCommission',
+    sortable: true,
+  },
+  {
+    name: 'totalOrders',
+    label: 'Всего заказов',
+    align: 'left',
+    field: 'totalOrders',
+    sortable: true,
+  },
+
+  {
+    name: 'totalSuccess',
+    label: 'Успешных заказов',
+    align: 'left',
+    field: 'totalSuccess',
+    sortable: true,
+  },
+  {
+    name: 'totalDelivery',
+    label: 'Успешных доставок',
+    align: 'left',
+    field: 'totalDelivery',
+    sortable: true,
+  },
+  {
+    name: 'totalDriver',
+    label: 'Успешных поездок',
+    align: 'left',
+    field: 'totalDriver',
+    sortable: true,
+  },
+  {
+    name: 'totalCancelOrders',
+    label: 'Отмененных заказов',
+    align: 'left',
+    field: 'totalCancelOrders',
+    sortable: true,
+  },
+];
+
 export const columnsTableDriver = <QTableColumn[]>[
   {
     name: 'chatId',

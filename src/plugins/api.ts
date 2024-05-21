@@ -9,6 +9,8 @@ import { City } from 'src/types/city.interface';
 import useUser from 'stores/user';
 import { storeToRefs } from 'pinia';
 import { Admin } from 'src/types/admin.interface';
+import { AddCommissionDto } from 'src/types/add-commission.dto';
+import { SendNewsDto } from 'src/types/sendNews.dto';
 
 const authStore = useUser();
 const { access_token } = storeToRefs(authStore);
@@ -146,6 +148,21 @@ export const $API = {
       promiseFuncFail
     );
   },
+
+  updateDriverCommission: function <S, F>(
+    chatId: number,
+    dto: AddCommissionDto,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'patch',
+      `driver/updateCommission/${chatId}`,
+      dto,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
   /***************************** Appeal *****************************/
   getAllAppeals: function <S, F>(promiseFuncSuccess: S, promiseFuncFail: F) {
     this.request(
@@ -213,6 +230,29 @@ export const $API = {
   },
 
   /***************************** Order *****************************/
+  getStatisticsByCity: function <S, F>(
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'get',
+      'order/byCity',
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  getAllStatistic: function <S, F>(promiseFuncSuccess: S, promiseFuncFail: F) {
+    this.request(
+      'get',
+      'order/allStatistic',
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
   getOrders: function <S, F>(
     data: QueryType,
     promiseFuncSuccess: S,
@@ -510,19 +550,33 @@ export const $API = {
   },
 
   login: function <S, F>(
-    data: LoginDto,
+    dto: LoginDto,
     promiseFuncSuccess: S,
     promiseFuncFail: F
   ) {
     this.request(
       'post',
       'auth/login',
-      data,
+      dto,
       promiseFuncSuccess,
       promiseFuncFail
     );
   },
 
+  /***************************** Newsletter *****************************/
+  sendNews: function <S, F>(
+    dto: SendNewsDto,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'post',
+      'newsletter/create',
+      dto,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
   /** REQUEST ============================================= */
   request: function (
     type: string,

@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { $API } from 'src/plugins/api';
 import { ResponseType } from 'src/types/query.type';
 import { City } from 'src/types/city.interface';
+import { Notify } from 'quasar';
 
 interface Emit {
   (event: 'add-admin'): void;
@@ -32,6 +33,11 @@ const addCity = () => {
       name.value = '';
       email.value = '';
       password.value = '';
+      Notify.create({
+        message: '☺️ Админ успешно добавлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       isLoading.value = false;

@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { Settings } from 'src/types/settings.interface';
 import { $API } from 'src/plugins/api';
+import { Notify } from 'quasar';
 
 defineOptions({
   name: 'SettingsCommission',
@@ -26,6 +27,11 @@ const setSettings = () => {
 
     (response: Settings) => {
       settings.value = response;
+      Notify.create({
+        message: '☺️ Комиссия успешно обновлена',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       error.value = 'Что-то пошло не так(((';

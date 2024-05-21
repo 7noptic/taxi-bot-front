@@ -7,7 +7,7 @@ import { ModeTable } from 'src/types/mode.table';
 import { columnsTableCity as columns } from 'src/constants/constants';
 import { TableEmits } from 'src/types/Table/emits.interface';
 import { TableProps } from 'src/types/Table';
-import { debounce } from 'quasar';
+import { debounce, Notify } from 'quasar';
 import { City } from 'src/types/city.interface';
 
 const emit = defineEmits<TableEmits>();
@@ -101,7 +101,11 @@ const deleteCity = async (id: string) => {
   $API.deleteCityById(
     id,
     async (response: ResponseType<City[]>) => {
-      console.log(response);
+      Notify.create({
+        message: '☺️ Город успешно удален',
+        color: 'positive',
+        timeout: 1500,
+      });
       emit('update');
     },
     (e: any) => {

@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { $API } from 'src/plugins/api';
 import { Settings } from 'src/types/settings.interface';
+import { Notify } from 'quasar';
 
 defineOptions({
   name: 'SettingsText',
@@ -19,6 +20,11 @@ const updateFaqText = () => {
     (response: Settings) => {
       settings.value = response;
       isLoading.value = false;
+      Notify.create({
+        message: '☺️ Текст успешно Обновлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       console.log(e);
@@ -37,6 +43,11 @@ const updatePriceText = () => {
     (response: Settings) => {
       settings.value = response;
       isLoading.value = false;
+      Notify.create({
+        message: '☺️ Текст успешно Обновлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       console.log(e);
@@ -55,6 +66,11 @@ const updateSupportText = () => {
     (response: Settings) => {
       settings.value = response;
       isLoading.value = false;
+      Notify.create({
+        message: '☺️ Текст успешно Обновлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       console.log(e);
@@ -73,6 +89,11 @@ const updateAboutText = () => {
     (response: Settings) => {
       settings.value = response;
       isLoading.value = false;
+      Notify.create({
+        message: '☺️ Текст успешно Обновлен',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       console.log(e);

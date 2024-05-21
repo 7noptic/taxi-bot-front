@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { ResponseType } from 'src/types/query.type';
 import { $API } from 'src/plugins/api';
 import { exportTable } from 'src/helpers/helpers';
@@ -7,7 +7,7 @@ import { ModeTable } from 'src/types/mode.table';
 import { columnsTableAdmin as columns } from 'src/constants/constants';
 import { TableEmits } from 'src/types/Table/emits.interface';
 import { TableProps } from 'src/types/Table';
-import { debounce } from 'quasar';
+import { debounce, Notify } from 'quasar';
 import { Admin } from 'src/types/admin.interface';
 import useUser from 'stores/user';
 import { storeToRefs } from 'pinia';
@@ -34,7 +34,7 @@ const isLoading = ref<boolean>(false);
 const loading = computed(() => isLoading.value || props.loading);
 const mode = ref<ModeTable>(props.mode);
 const authStore = useUser();
-const { user } = storeToRefs(authStore);
+const { userData: user } = storeToRefs(authStore);
 const isLoadingCSV = ref<boolean>(false);
 const visibleColumns = computed(() =>
   props.hiddenFields.length
@@ -106,6 +106,11 @@ const deleteAdmin = async (id: string) => {
     async (response: ResponseType<Admin[]>) => {
       console.log(response);
       emit('update');
+      Notify.create({
+        message: '☺️ Админ успешно удален',
+        color: 'positive',
+        timeout: 1500,
+      });
     },
     (e: any) => {
       isLoadingCSV.value = false;
@@ -121,6 +126,12 @@ const selectPage = (page: number) => {
 const list = computed(() =>
   !!searchedText.value ? searchedList.value : props.list
 );
+
+const isMounted = ref<boolean>(false);
+
+onMounted(() => {
+  setTimeout(() => (isMounted.value = true), 1500);
+});
 </script>
 <template>
   <div class="container">

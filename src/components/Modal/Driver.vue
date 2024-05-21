@@ -45,71 +45,124 @@
 
           <q-card-section>
             <div v-for="(value, key) in fields" :key="key" class="table-item">
-              <template v-if="driver[key]">
-                <b>{{ value }}: </b>
-                <span>
-                  <template v-if="key === 'averageRating'">
-                    {{ driver[key].toFixed(2) }}
-                  </template>
-                  <template v-else-if="key === 'createdAt'">
-                    {{ new Date(driver[key]).toLocaleDateString('ru-RU') }}
-                  </template>
-                  <template v-else-if="key === 'car'">
-                    {{ driver.car.carColor }}
-                    {{ driver.car.carBrand }}
-                    |
-                    {{ driver.car.carNumber }}
-                  </template>
-                  <template v-else-if="key === 'accessOrderType'">
-                    {{ accessOrderTypeToRus[driver[key]] }}
-                  </template>
-                  <template v-else-if="key === 'address'">
-                    {{ driver[key].length }}
-                    <q-chip
-                      v-if="driver[key].length"
-                      clickable
-                      color="teal"
+              <b>{{ value }}: </b>
+              <span>
+                <template v-if="key === 'averageRating'">
+                  {{ driver[key].toFixed(2) }}
+                </template>
+                <template v-else-if="key === 'createdAt'">
+                  {{ new Date(driver[key]).toLocaleDateString('ru-RU') }}
+                </template>
+                <template v-else-if="key === 'car'">
+                  {{ driver.car.carColor }}
+                  {{ driver.car.carBrand }}
+                  |
+                  {{ driver.car.carNumber }}
+                </template>
+                <template v-else-if="key === 'accessOrderType'">
+                  {{ accessOrderTypeToRus[driver[key]] }}
+                </template>
+                <template v-else-if="key === 'address'">
+                  {{ driver[key]?.length }}
+                  <q-chip
+                    v-if="driver[key]?.length"
+                    clickable
+                    color="teal"
+                    dense
+                    icon="visibility"
+                    text-color="white"
+                    @click.stop="openDrawer(driver.address)"
+                  >
+                    Посмотреть
+                  </q-chip>
+                </template>
+                <template v-else-if="key === 'leftReview'">
+                  {{ driver[key] }}
+                  <q-chip
+                    v-if="driver.reviewFrom.length"
+                    clickable
+                    color="teal"
+                    dense
+                    icon="visibility"
+                    text-color="white"
+                    @click.stop="openDrawer(driver.reviewFrom)"
+                  >
+                    Посмотреть
+                  </q-chip>
+                </template>
+                <template v-else-if="key === 'isBusy'">
+                  {{ driver[key] ? 'На заказе' : 'Не на заказе' }}
+                </template>
+                <template v-else-if="key === 'commission'">
+                  {{
+                    new Date(driver.commissionExpiryDate) > new Date()
+                      ? driver[key]
+                      : 0
+                  }}
+                  %
+                  <q-chip
+                    clickable
+                    color="teal"
+                    dense
+                    icon="visibility"
+                    text-color="white"
+                    @click.stop="
+                      visibleEditedCommission = !visibleEditedCommission
+                    "
+                  >
+                    Изменить
+                  </q-chip>
+                  <div v-if="visibleEditedCommission" style="max-width: 300px">
+                    <q-input
+                      v-model.trim.number="commissionAmount"
+                      :disable="isLoading"
+                      :error="!!error"
+                      class="add__input"
                       dense
-                      icon="visibility"
-                      text-color="white"
-                      @click.stop="openDrawer(driver.address)"
-                    >
-                      Посмотреть
-                    </q-chip>
-                  </template>
-                  <template v-else-if="key === 'leftReview'">
-                    {{ driver[key] }}
-                    <q-chip
-                      v-if="driver.reviewFrom.length"
-                      clickable
-                      color="teal"
+                      label="Размер комиссии в процентах"
+                      outlined
+                    />
+                    <q-input
+                      v-model.trim.number="daysAmount"
+                      :disable="isLoading"
+                      :error="!!error"
+                      class="add__input"
                       dense
-                      icon="visibility"
-                      text-color="white"
-                      @click.stop="openDrawer(driver.reviewFrom)"
-                    >
-                      Посмотреть
-                    </q-chip>
-                  </template>
-                  <template v-else-if="key === 'receivedReview'">
-                    {{ driver[key] }}
-                    <q-chip
-                      v-if="driver.reviewTo.length"
-                      clickable
-                      color="teal"
-                      dense
-                      icon="visibility"
-                      text-color="white"
-                      @click.stop="openDrawer(driver.reviewTo)"
-                    >
-                      Посмотреть
-                    </q-chip>
-                  </template>
-                  <template v-else>
-                    {{ driver[key] }}
-                  </template>
-                </span>
-              </template>
+                      label="Количество дней"
+                      outlined
+                      @keyup.enter="setCommission"
+                    />
+
+                    <q-btn
+                      :disable="isLoading || !commissionAmount || !daysAmount"
+                      class="add__button full-width"
+                      color="primary"
+                      label="Изменить"
+                      standout
+                      unelevated
+                      @click.stop="setCommission"
+                      @keyup.enter="setCommission"
+                    />
+                  </div>
+                </template>
+                <template v-else-if="key === 'receivedReview'">
+                  {{ driver[key] }}
+                  <q-chip
+                    v-if="driver.reviewTo.length"
+                    clickable
+                    color="teal"
+                    dense
+                    icon="visibility"
+                    text-color="white"
+                    @click.stop="openDrawer(driver.reviewTo)"
+                  >
+                    Посмотреть
+                  </q-chip>
+                </template>
+                <template v-else>
+                  {{ driver[key] }}
+                </template>
+              </span>
             </div>
 
             <q-btn
@@ -146,7 +199,7 @@ import { ModeTable } from 'src/types/mode.table';
 import { FullDriverInfo } from 'src/types/full-driver-info.interface';
 import { Driver } from 'src/types/driver.interface';
 import { accessOrderTypeToRus } from 'src/types/access-order.type';
-import { StatusDriver } from '../../types/status-driver.enum';
+import { StatusDriver } from 'src/types/status-driver.enum';
 
 interface Props {
   modelValue: boolean;
@@ -166,21 +219,25 @@ const fields = {
   createdAt: 'Создан',
   leftReview: 'Оставил отзывов',
   countOrders: 'Всего заказов',
-  driveCount: 'количество поездок',
+  driveCount: 'Количество поездок',
   deliveryCount: 'Количество доставок',
   canceledCount: 'Отменено заказов',
   averageRating: 'Рейтинг',
   receivedReview: 'Получил отзывов',
-  isBusy: 'На заказе?',
+  isBusy: 'Занятость водителя.',
   car: 'Машина',
   priority: 'Приоритет',
-  commission: 'Комиссия',
   accessOrderType: 'Тип принимаемых заказов',
-  // status: 'Статус',
+  commission: 'Комиссия',
 };
 
 const selectedMessageList = ref<Review[]>([]);
 const drawer = ref<boolean>(false);
+const visibleEditedCommission = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
+const commissionAmount = ref<string>('');
+const daysAmount = ref<string>('');
+const error = ref<string>('');
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
   chatId: 0,
@@ -236,6 +293,55 @@ const toggleBlockedDriver = async () => {
   );
 
   isLoadingBlocked.value = false;
+};
+
+const setCommission = async () => {
+  if (
+    !+commissionAmount.value ||
+    !+daysAmount.value ||
+    +daysAmount.value <= 0 ||
+    +commissionAmount.value <= 0 ||
+    +commissionAmount.value > 100
+  ) {
+    Notify.create({
+      message: 'Что то не так с данными',
+      color: 'negative',
+      timeout: 1000,
+    });
+    return;
+  }
+  isLoading.value = true;
+
+  await $API.updateDriverCommission(
+    props.chatId,
+    {
+      commission: +commissionAmount.value,
+      countDays: +daysAmount.value,
+    },
+    (data: Driver) => {
+      console.log(data);
+      driver.value = <FullDriverInfo>{
+        ...driver.value,
+        ...data,
+      };
+      Notify.create({
+        message: 'Комиссия водителя успешно обновлена',
+        color: 'positive',
+        timeout: 1000,
+      });
+      isLoading.value = false;
+      visibleEditedCommission.value = false;
+    },
+    (e: any) => {
+      Notify.create({
+        message: 'Что-то пошло не так😞...',
+        color: 'negative',
+        timeout: 1000,
+      });
+      console.log(e);
+      isLoading.value = false;
+    }
+  );
 };
 
 const getFullDriverInfo = () => {

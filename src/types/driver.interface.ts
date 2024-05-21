@@ -31,6 +31,8 @@ export interface Driver {
   accessOrderType: typeof AccessTypeOrder;
 
   commission: number;
+  
+  commissionExpiryDate: Date;
 
   priority: number;
 
