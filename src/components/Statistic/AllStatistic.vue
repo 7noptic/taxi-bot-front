@@ -42,7 +42,8 @@ onMounted(() => {
         <b>{{ periods[key] }}</b>
       </h4>
       <div v-for="(value, key) in value" :key="key" class="stats-item">
-        <b>{{ titles[key] }}</b> - {{ value.toLocaleString() }}
+        <b>{{ titles[key] }}</b>
+        : {{ value.toLocaleString() }}
       </div>
     </div>
   </div>

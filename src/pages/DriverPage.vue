@@ -6,14 +6,26 @@ import TableDriver from 'components/Tables/TableDriver.vue';
 import { PaginationType, ResponseType } from 'src/types/query.type';
 import TableSkeleton from 'components/Tables/TableSkeleton.vue';
 
-const passengers = ref<Driver[]>([]);
-const pagination = ref<PaginationType>({
+const tab = ref<string>('all');
+
+const drivers = ref<Driver[]>([]);
+const driversBlocked = ref<Driver[]>([]);
+
+const paginationDriver = ref<PaginationType>({
   currentPage: 1,
   perPageCount: 10,
   total: 10,
 });
+
+const paginationBlockedDriver = ref<PaginationType>({
+  currentPage: 1,
+  perPageCount: 10,
+  total: 10,
+});
+
 const isLoading = ref<boolean>(false);
 const isLoadingTable = ref<boolean>(false);
+
 const getDrivers = async (currentPage: number) => {
   isLoading.value = true;
   $API.getDrivers(
@@ -21,8 +33,28 @@ const getDrivers = async (currentPage: number) => {
       currentPage,
     },
     (response: ResponseType<Driver[]>) => {
-      passengers.value = response.data;
-      pagination.value = {
+      drivers.value = response.data;
+      paginationDriver.value = {
+        currentPage: response.currentPage,
+        perPageCount: response.perPageCount,
+        total: response.total,
+      };
+      isLoadingTable.value = false;
+      isLoading.value = false;
+    },
+    (e: any) => console.log(e)
+  );
+};
+
+const getBlockedDrivers = async (currentPage: number) => {
+  isLoading.value = true;
+  $API.getBlockedDrivers(
+    {
+      currentPage,
+    },
+    (response: ResponseType<Driver[]>) => {
+      driversBlocked.value = response.data;
+      paginationBlockedDriver.value = {
         currentPage: response.currentPage,
         perPageCount: response.perPageCount,
         total: response.total,
@@ -37,20 +69,62 @@ const getDrivers = async (currentPage: number) => {
 onMounted(async () => {
   isLoadingTable.value = true;
   await getDrivers(1);
+  await getBlockedDrivers(1);
 });
 </script>
 
 <template>
-  <q-page class="row justify-evenly items-start q-pa-lg">
-    <TableSkeleton v-if="isLoadingTable" title="Заказы" />
-    <TableDriver
-      v-else
-      :key="pagination"
-      :list="passengers"
-      :loading="isLoading"
-      :pagination="pagination"
-      @select-page="(page) => getDrivers(page)"
-    />
+  <q-page class="q-pa-lg">
+    <div>
+      <q-tabs
+        v-model="tab"
+        align="justify"
+        class="text-primary"
+        dense
+        narrow-indicator
+      >
+        <q-tab
+          :ripple="false"
+          icon="group"
+          label="Все пользователи"
+          name="all"
+        />
+
+        <q-tab
+          :class="{ 'text-red': driversBlocked.length }"
+          :ripple="false"
+          icon="block"
+          label="Ожидают подтверждения"
+          name="blocked"
+        />
+      </q-tabs>
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="all">
+          <TableSkeleton v-if="isLoadingTable" title="Водители" />
+          <TableDriver
+            v-else
+            :key="paginationDriver"
+            :list="drivers"
+            :loading="isLoading"
+            :pagination="paginationDriver"
+            @select-page="(page) => getDrivers(page)"
+          />
+        </q-tab-panel>
+
+        <q-tab-panel name="blocked">
+          <TableSkeleton v-if="isLoadingTable" title="Водители" />
+          <TableDriver
+            v-else
+            :key="paginationBlockedDriver"
+            :list="driversBlocked"
+            :loading="isLoading"
+            :pagination="paginationBlockedDriver"
+            @select-page="(page) => getBlockedDrivers(page)"
+          />
+        </q-tab-panel>
+      </q-tab-panels>
+    </div>
   </q-page>
 </template>
 

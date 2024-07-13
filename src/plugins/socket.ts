@@ -16,12 +16,6 @@ export default class SocketClient {
     }
   }
 
-  // public static on(e: SocketEventsEnum, f: (data: any) => void) {
-  //   SocketClient.client?.on(e, (data: any) => {
-  //     f(data);
-  //   });
-  // }
-
   public static connect(token: string) {
     SocketClient.instance = new SocketClient(token);
   }
@@ -33,7 +27,7 @@ export default class SocketClient {
       head: { token },
       extraHeaders: { Authorization: token },
     };
-    SocketClient.client = io('http://localhost:3000', params) as Socket;
+    SocketClient.client = io(process.env.API_URL as string, params) as Socket;
 
     for (const event of Object.values(SocketEventsEnum)) {
       SocketClient.client.on(event, (data: Appeal) => {

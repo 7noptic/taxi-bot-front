@@ -9,6 +9,7 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const { configure } = require('quasar/wrappers');
+require('dotenv').config();
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -55,7 +56,7 @@ module.exports = configure(function (/* ctx */) {
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
-      // vueDevtools,
+      // vueDevtools: process.env.NODE_ENV === 'development',
       // vueOptionsAPI: false,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
@@ -87,7 +88,7 @@ module.exports = configure(function (/* ctx */) {
       port: 8085,
       proxy: {
         '/api': {
-          target: 'http://localhost:3000',
+          target: process.env.API_URL,
           secure: false,
           changeOrigin: true,
           headers: {

@@ -99,7 +99,7 @@
                       ? driver[key]
                       : 0
                   }}
-                  %
+                  руб.
                   <q-chip
                     clickable
                     color="teal"
@@ -119,7 +119,7 @@
                       :error="!!error"
                       class="add__input"
                       dense
-                      label="Размер комиссии в процентах"
+                      label="Размер комиссии в рублях"
                       outlined
                     />
                     <q-input
@@ -166,6 +166,21 @@
             </div>
 
             <q-btn
+              v-if="
+                driver.isBlocked &&
+                driver.blockedType === BlockedType.NotConfirmed
+              "
+              :loading="isLoadingBlocked"
+              class="q-my-sm q-mb-xl"
+              color="green"
+              @click="activatedDriver"
+            >
+              Активировать
+              <template v-slot:loading> Loading...</template>
+            </q-btn>
+
+            <q-btn
+              v-else
               :color="driver.isBlocked ? 'green' : 'red'"
               :loading="isLoadingBlocked"
               class="q-my-sm q-mb-xl"
@@ -198,8 +213,9 @@ import { Notify } from 'quasar';
 import { ModeTable } from 'src/types/mode.table';
 import { FullDriverInfo } from 'src/types/full-driver-info.interface';
 import { Driver } from 'src/types/driver.interface';
-import { accessOrderTypeToRus } from 'src/types/access-order.type';
-import { StatusDriver } from 'src/types/status-driver.enum';
+import { StatusDriver } from '../../types/status-driver.enum';
+import { accessOrderTypeToRus } from '../../types/access-order.type';
+import { BlockedType } from 'src/types/blocked-type.interface';
 
 interface Props {
   modelValue: boolean;
@@ -272,15 +288,13 @@ watch(
   () => getFullDriverInfo()
 );
 
-const toggleBlockedDriver = async () => {
+const activatedDriver = () => {
   isLoadingBlocked.value = true;
-  await $API.updateDriver(
-    props.chatId,
-    {
-      isBlocked: !driver.value?.isBlocked,
-    },
+  $API.activatedDriver(
+    driver.value?.chatId as number,
     (data: Driver) => {
       driver.value!.isBlocked = data.isBlocked;
+      isLoadingBlocked.value = false;
     },
     (e: any) => {
       Notify.create({
@@ -289,10 +303,48 @@ const toggleBlockedDriver = async () => {
         timeout: 1000,
       });
       console.log(e);
+      isLoadingBlocked.value = false;
     }
   );
+};
 
-  isLoadingBlocked.value = false;
+const toggleBlockedDriver = async () => {
+  isLoadingBlocked.value = true;
+  if (driver.value?.isBlocked === true) {
+    $API.unlockedDriver(
+      driver.value?.chatId,
+      (data: Driver) => {
+        driver.value!.isBlocked = data.isBlocked;
+        isLoadingBlocked.value = false;
+      },
+      (e: any) => {
+        Notify.create({
+          message: 'Что-то пошло не так😞...',
+          color: 'negative',
+          timeout: 1000,
+        });
+        console.log(e);
+        isLoadingBlocked.value = false;
+      }
+    );
+  } else if (driver.value?.isBlocked === false) {
+    $API.lockedDriver(
+      driver.value?.chatId as number,
+      (data: Driver) => {
+        driver.value!.isBlocked = data.isBlocked;
+        isLoadingBlocked.value = false;
+      },
+      (e: any) => {
+        Notify.create({
+          message: 'Что-то пошло не так😞...',
+          color: 'negative',
+          timeout: 1000,
+        });
+        console.log(e);
+        isLoadingBlocked.value = false;
+      }
+    );
+  }
 };
 
 const setCommission = async () => {

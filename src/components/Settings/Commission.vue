@@ -12,7 +12,7 @@ const settings = ref<Settings>();
 const commission = ref<Settings['commission']>();
 const isLoading = ref<boolean>(false);
 const error = ref<string>('');
-const hintText = ref<string>('Комиссия указывается в процентах.');
+const hintText = ref<string>('Комиссия указывается в рублях.');
 
 const setSettings = () => {
   error.value = '';
@@ -56,7 +56,7 @@ onMounted(() => {
   <div v-if="settings" class="commission flex items-start">
     <p class="commission__text">
       В данный момент размер комиссии составляет
-      <b>{{ settings.commission }} %</b>
+      <b>{{ settings.commission }} руб.</b>
     </p>
     <q-input
       v-model.number="commission"
@@ -66,7 +66,7 @@ onMounted(() => {
       :hint="hintText"
       class="commission__input"
       dense
-      label="Комиссия %"
+      label="Комиссия (руб.)"
       outlined
       @keyup.enter="setSettings"
     />

@@ -14,12 +14,14 @@
             filled
           >
             <template #selected-item="prop"> {{ labels[prop.opt] }}</template>
+            <!--            <template #option="prop"> {{ labels[prop.opt] }}</template>-->
           </q-select>
           <q-input
             v-model="message"
             autogrow
             class="q-mb-sm item__input"
             filled
+            label="Введите текст рассылки"
           />
           <q-btn
             :disable="isLoading || !message"

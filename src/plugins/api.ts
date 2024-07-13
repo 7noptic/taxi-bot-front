@@ -106,6 +106,20 @@ export const $API = {
     );
   },
 
+  getBlockedDrivers: function <S, F>(
+    data: QueryType,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'get',
+      `driver/blocked/getLimitOrder/${data.currentPage}`,
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
   findDriverByChatId: function <S, F>(
     chatId: string,
     promiseFuncSuccess: S,
@@ -144,6 +158,48 @@ export const $API = {
       'patch',
       `driver/${chatId}`,
       dto,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  lockedDriver: function <S, F>(
+    chatId: number,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'patch',
+      `driver/locked/${chatId}`,
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  unlockedDriver: function <S, F>(
+    chatId: number,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'patch',
+      `driver/unlocked/${chatId}`,
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  activatedDriver: function <S, F>(
+    chatId: number,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'patch',
+      `driver/activated/${chatId}`,
+      false,
       promiseFuncSuccess,
       promiseFuncFail
     );

@@ -23,7 +23,7 @@ export const columnsTableOrder = <QTableColumn[]>[
     label: 'Номер заказа',
     align: 'left',
     field: 'numberOrder',
-    format: (value: string) => value.split('-')[1],
+    format: (value: string) => value.split(' ')[1],
     sortable: false,
   },
   {
