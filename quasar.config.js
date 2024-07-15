@@ -86,17 +86,17 @@ module.exports = configure(function (/* ctx */) {
         type: 'http',
       },
       port: 8085,
-      proxy: {
-        '/api': {
-          target: process.env.API_URL,
-          secure: false,
-          changeOrigin: true,
-          headers: {
-            Connection: 'keep-alive',
-          },
-          // pathRewrite: { "^/api": "/" }
-        },
-      },
+      // proxy: {
+      //   '/api': {
+      //     target: process.env.API_URL,
+      //     secure: false,
+      //     changeOrigin: true,
+      //     headers: {
+      //       Connection: 'keep-alive',
+      //     },
+      //     // pathRewrite: { "^/api": "/" }
+      //   },
+      // },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
