@@ -9,7 +9,7 @@ declare module '@vue/runtime-core' {
 }
 console.log(process.env.API_URL);
 const api = axios.create({
-  baseURL: 'http://taxi-bot-admin.ru',
+  baseURL: 'http://taxi-bot-backend.ru',
 
   headers: {
     Connection: 'keep-alive',
