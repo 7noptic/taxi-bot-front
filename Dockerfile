@@ -5,6 +5,9 @@ COPY . .
 RUN npm install
 RUN npm install -g surge
 COPY ./ .
+ENV NODE_ENV production
+ENV QUASAR_MODE production
+
 RUN npm run dev
 
 FROM nginx as production-stage
