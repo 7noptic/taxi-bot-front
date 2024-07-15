@@ -13,6 +13,7 @@ const api = axios.create({
 
   headers: {
     Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
   },
 });
 
