@@ -17,7 +17,7 @@ console.log(process.env.API_URL);
 //   },
 // });
 const api = axios.create({
-  proxy: true,
+  baseURL: 'http://taxi-bot-backend.ru:3000',
 });
 export default boot(({ app }) => {
   app.config.globalProperties.$axios = axios;
