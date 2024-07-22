@@ -5,7 +5,7 @@ COPY . .
 RUN npm install
 ENV NODE_ENV production
 ENV QUASAR_MODE production
-RUN npm run build
+RUN npm run dev
 
 FROM nginx as production-stage
 COPY --from=build-stage /app/dist /app
