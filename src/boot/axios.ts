@@ -7,17 +7,10 @@ declare module '@vue/runtime-core' {
     $api: AxiosInstance;
   }
 }
-console.log(process.env.API_URL);
-// const api = axios.create({
-//   baseURL: 'http://taxi-bot-backend.ru',
-//
-//   headers: {
-//     Connection: 'keep-alive',
-//     'Access-Control-Allow-Origin': '*',
-//   },
-// });
+
 const api = axios.create({
   baseURL: 'http://taxi-bot-backend.ru:3000',
+  // baseURL: 'http://localhost:3000',
 });
 export default boot(({ app }) => {
   app.config.globalProperties.$axios = axios;

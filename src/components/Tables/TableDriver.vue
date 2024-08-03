@@ -78,7 +78,7 @@ const search = debounce(async (updatedSearchedText: string) => {
     searchedText.value,
     (response: Driver) => {
       mode.value = ModeTable.All;
-      searchedList.value = [response];
+      searchedList.value = !!response ? [response] : [];
       isLoading.value = false;
     },
     fail()

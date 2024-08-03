@@ -77,8 +77,9 @@ const search = debounce(async (updatedSearchedText: string) => {
   await $API.findPassengerByChatId(
     searchedText.value,
     (response: Passenger) => {
+      console.log(response);
       mode.value = ModeTable.All;
-      searchedList.value = [response];
+      searchedList.value = !!response ? [response] : [];
       isLoading.value = false;
     },
     fail()

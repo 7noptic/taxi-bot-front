@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { $API } from 'src/plugins/api';
 import { Passenger } from 'src/types/passenger.interface';
 import TablePassenger from 'components/Tables/TablePassenger.vue';
 import { PaginationType, ResponseType } from 'src/types/query.type';
 import TableSkeleton from 'components/Tables/TableSkeleton.vue';
+import { EventBus } from 'quasar';
 
+const bus = <EventBus>inject('bus');
 const passengers = ref<Passenger[]>([]);
 const pagination = ref<PaginationType>({
   currentPage: 1,
@@ -14,6 +16,13 @@ const pagination = ref<PaginationType>({
 });
 const isLoading = ref<boolean>(false);
 const isLoadingTable = ref<boolean>(false);
+const selectedPage = ref<number>(1);
+
+const selectPage = async (page: number) => {
+  selectedPage.value = page;
+  await getPassengers(selectedPage.value);
+};
+
 const getPassengers = async (currentPage: number) => {
   isLoading.value = true;
   $API.getPassengers(
@@ -36,7 +45,12 @@ const getPassengers = async (currentPage: number) => {
 
 onMounted(async () => {
   isLoadingTable.value = true;
-  await getPassengers(1);
+  await getPassengers(selectedPage.value);
+  bus.on('update-passengers', () => getPassengers(selectedPage.value));
+});
+
+onUnmounted(() => {
+  bus.off('update-passengers', getPassengers);
 });
 </script>
 
@@ -49,7 +63,7 @@ onMounted(async () => {
       :list="passengers"
       :loading="isLoading"
       :pagination="pagination"
-      @select-page="(page) => getPassengers(page)"
+      @select-page="selectPage"
     />
   </q-page>
 </template>

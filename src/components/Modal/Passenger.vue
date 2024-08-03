@@ -37,6 +37,15 @@
               {{ passenger.first_name || passenger.username || 'Пользователь' }}
               <b>({{ passenger.chatId }})</b>
             </div>
+            <q-btn
+              :loading="isLoading"
+              class="q-my-sm q-ml-md"
+              color="red"
+              size="xs"
+              @click="deletePassenger"
+            >
+              Удалить пользователя
+            </q-btn>
             <q-space />
             <q-btn v-close-popup dense flat icon="close" round />
           </q-card-section>
@@ -125,14 +134,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { Address, Passenger } from 'src/types/passenger.interface';
 import CardSkeleton from 'components/CardSkeleton.vue';
 import { $API } from 'src/plugins/api';
 import TableOrder from 'components/Tables/TableOrder.vue';
 import { FullPassengerInfo } from 'src/types/full-passenger-info.interface';
 import { Review } from 'src/types/review.interface';
-import { Notify } from 'quasar';
+import { EventBus, Notify } from 'quasar';
 import { ModeTable } from 'src/types/mode.table';
 
 interface Props {
@@ -173,6 +182,7 @@ defineOptions({
 const passenger = ref<FullPassengerInfo>();
 const modal = ref<boolean>(props.modelValue);
 const isLoadingBlocked = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
 const openDrawer = (list: Address[] | Review[]) => {
   selectedMessageList.value = list;
   drawer.value = true;
@@ -235,6 +245,45 @@ const getFullPassengerInfo = () => {
         timeout: 1000,
       });
       console.log(e);
+    }
+  );
+};
+
+const bus = <EventBus>inject('bus');
+
+const deletePassenger = () => {
+  isLoading.value = true;
+
+  $API.deletePassenger(
+    passenger.value?.chatId as number,
+    (data: Passenger) => {
+      console.log(data);
+      if (!!data) {
+        bus.emit('update-passengers');
+        modal.value = false;
+        isLoading.value = false;
+        Notify.create({
+          message: 'Пользователь успешно удален',
+          color: 'positive',
+          timeout: 1000,
+        });
+      } else {
+        Notify.create({
+          message: 'Что-то пошло не так😞...',
+          color: 'negative',
+          timeout: 1000,
+        });
+        isLoading.value = false;
+      }
+    },
+    (e: any) => {
+      Notify.create({
+        message: 'Что-то пошло не так😞...',
+        color: 'negative',
+        timeout: 1000,
+      });
+      console.log(e);
+      isLoading.value = false;
     }
   );
 };

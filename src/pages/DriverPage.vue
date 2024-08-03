@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { $API } from 'src/plugins/api';
 import { Driver } from 'src/types/driver.interface';
 import TableDriver from 'components/Tables/TableDriver.vue';
 import { PaginationType, ResponseType } from 'src/types/query.type';
 import TableSkeleton from 'components/Tables/TableSkeleton.vue';
+import { EventBus } from 'quasar';
 
 const tab = ref<string>('all');
+const bus = <EventBus>inject('bus');
 
 const drivers = ref<Driver[]>([]);
 const driversBlocked = ref<Driver[]>([]);
-
+const selectedDriverPage = ref<number>(1);
+const selectedBlockedDriverPage = ref<number>(1);
 const paginationDriver = ref<PaginationType>({
   currentPage: 1,
   perPageCount: 10,
@@ -66,10 +69,28 @@ const getBlockedDrivers = async (currentPage: number) => {
   );
 };
 
+const selectDriverPage = async (page: number) => {
+  selectedDriverPage.value = page;
+  await getDrivers(selectedDriverPage.value);
+};
+
+const selectBlockedDriverPage = async (page: number) => {
+  selectedDriverPage.value = page;
+  await getBlockedDrivers(selectedBlockedDriverPage.value);
+};
+
 onMounted(async () => {
   isLoadingTable.value = true;
-  await getDrivers(1);
-  await getBlockedDrivers(1);
+  await getDrivers(selectedDriverPage.value);
+  await getBlockedDrivers(selectedBlockedDriverPage.value);
+  bus.on('update-drivers', () => getDrivers(selectedDriverPage.value));
+  bus.on('update-drivers', () =>
+    getBlockedDrivers(selectedBlockedDriverPage.value)
+  );
+});
+onUnmounted(() => {
+  bus.off('update-drivers', getDrivers);
+  bus.off('update-drivers', getBlockedDrivers);
 });
 </script>
 
@@ -108,7 +129,7 @@ onMounted(async () => {
             :list="drivers"
             :loading="isLoading"
             :pagination="paginationDriver"
-            @select-page="(page) => getDrivers(page)"
+            @select-page="selectDriverPage"
           />
         </q-tab-panel>
 
@@ -120,7 +141,7 @@ onMounted(async () => {
             :list="driversBlocked"
             :loading="isLoading"
             :pagination="paginationBlockedDriver"
-            @select-page="(page) => getBlockedDrivers(page)"
+            @select-page="selectBlockedDriverPage"
           />
         </q-tab-panel>
       </q-tab-panels>

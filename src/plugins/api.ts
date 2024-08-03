@@ -163,6 +163,34 @@ export const $API = {
     );
   },
 
+  deleteDriver: function <S, F>(
+    chatId: number,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'delete',
+      `driver/delete/${chatId}`,
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  deletePassenger: function <S, F>(
+    chatId: number,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'delete',
+      `passenger/delete/${chatId}`,
+      false,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
   lockedDriver: function <S, F>(
     chatId: number,
     promiseFuncSuccess: S,

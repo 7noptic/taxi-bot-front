@@ -39,6 +39,15 @@
               {{ driver.status === StatusDriver.Online ? '🟢' : '🔴' }}
               {{ driver.status }}
             </div>
+            <q-btn
+              :loading="isLoading"
+              class="q-my-sm q-ml-md"
+              color="red"
+              size="xs"
+              @click="deleteDriver"
+            >
+              Удалить пользователя
+            </q-btn>
             <q-space />
             <q-btn v-close-popup dense flat icon="close" round />
           </q-card-section>
@@ -204,12 +213,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import CardSkeleton from 'components/CardSkeleton.vue';
 import { $API } from 'src/plugins/api';
 import TableOrder from 'components/Tables/TableOrder.vue';
 import { Review } from 'src/types/review.interface';
-import { Notify } from 'quasar';
+import { EventBus, Notify } from 'quasar';
 import { ModeTable } from 'src/types/mode.table';
 import { FullDriverInfo } from 'src/types/full-driver-info.interface';
 import { Driver } from 'src/types/driver.interface';
@@ -304,6 +313,43 @@ const activatedDriver = () => {
       });
       console.log(e);
       isLoadingBlocked.value = false;
+    }
+  );
+};
+
+const bus = <EventBus>inject('bus');
+
+const deleteDriver = () => {
+  isLoading.value = true;
+  $API.deleteDriver(
+    driver.value?.chatId as number,
+    (data: Driver) => {
+      if (!!data) {
+        bus.emit('update-drivers');
+        modal.value = false;
+        isLoading.value = false;
+        Notify.create({
+          message: 'Пользователь успешно удален',
+          color: 'positive',
+          timeout: 1000,
+        });
+      } else {
+        Notify.create({
+          message: 'Что-то пошло не так😞...',
+          color: 'negative',
+          timeout: 1000,
+        });
+        isLoading.value = false;
+      }
+    },
+    (e: any) => {
+      Notify.create({
+        message: 'Что-то пошло не так😞...',
+        color: 'negative',
+        timeout: 1000,
+      });
+      console.log(e);
+      isLoading.value = false;
     }
   );
 };
