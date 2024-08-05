@@ -63,7 +63,10 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      // env: {
+      //   NODE_ENV: 'production',
+      //   QUASAR_MODE: 'production',
+      // },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -81,7 +84,8 @@ module.exports = configure(function (/* ctx */) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
       // https: true
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
+      // open: true, // opens browser window automatically
       server: {
         type: 'http',
       },
