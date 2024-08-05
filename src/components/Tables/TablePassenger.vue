@@ -137,7 +137,7 @@ const list = computed(() =>
         debounce="300"
         dense
         outlined
-        placeholder="Поиск по ID"
+        placeholder="Поиск по ID/телефону"
         standout
         @update:model-value="search"
       >

@@ -56,6 +56,7 @@ const getBlockedDrivers = async (currentPage: number) => {
       currentPage,
     },
     (response: ResponseType<Driver[]>) => {
+      console.log(response);
       driversBlocked.value = response.data;
       paginationBlockedDriver.value = {
         currentPage: response.currentPage,
@@ -75,7 +76,7 @@ const selectDriverPage = async (page: number) => {
 };
 
 const selectBlockedDriverPage = async (page: number) => {
-  selectedDriverPage.value = page;
+  selectedBlockedDriverPage.value = page;
   await getBlockedDrivers(selectedBlockedDriverPage.value);
 };
 

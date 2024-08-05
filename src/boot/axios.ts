@@ -7,7 +7,6 @@ declare module '@vue/runtime-core' {
     $api: AxiosInstance;
   }
 }
-
 const api = axios.create({
   baseURL: 'http://taxi-bot-backend.ru:3000',
   // baseURL: 'http://localhost:3000',
