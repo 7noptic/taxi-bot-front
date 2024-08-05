@@ -71,19 +71,41 @@
                 <template v-else-if="key === 'accessOrderType'">
                   {{ accessOrderTypeToRus[driver[key]] }}
                 </template>
-                <template v-else-if="key === 'address'">
+
+                <template v-else-if="key === 'notes'">
                   {{ driver[key]?.length }}
                   <q-chip
-                    v-if="driver[key]?.length"
+                    v-if="driver.notes.length"
                     clickable
                     color="teal"
                     dense
                     icon="visibility"
                     text-color="white"
-                    @click.stop="openDrawer(driver.address)"
+                    @click.stop="openDrawer(driver.notes)"
                   >
                     Посмотреть
                   </q-chip>
+                  <q-chip
+                    clickable
+                    color="teal"
+                    dense
+                    icon="edit"
+                    text-color="white"
+                    @click.stop="isVisibleNoteField = !isVisibleNoteField"
+                  >
+                    Оставить заметку
+                  </q-chip>
+
+                  <div v-if="isVisibleNoteField" style="max-width: 500px">
+                    <q-input
+                      v-model="note"
+                      filled
+                      label="Заметка"
+                      placeholder="Введите текст заметки"
+                      type="textarea"
+                    />
+                    <q-btn @click="sendNote"> Оставить </q-btn>
+                  </div>
                 </template>
                 <template v-else-if="key === 'leftReview'">
                   {{ driver[key] }}
@@ -225,6 +247,8 @@ import { Driver } from 'src/types/driver.interface';
 import { StatusDriver } from '../../types/status-driver.enum';
 import { accessOrderTypeToRus } from '../../types/access-order.type';
 import { BlockedType } from 'src/types/blocked-type.interface';
+import { Note } from 'src/types/note';
+import { CreateNoteDto } from 'src/types/create-note.dto';
 
 interface Props {
   modelValue: boolean;
@@ -240,7 +264,6 @@ const fields = {
   phone: 'Номер телефона',
   last_name: 'Фамилия',
   city: 'Город',
-  address: 'Адреса',
   createdAt: 'Создан',
   leftReview: 'Оставил отзывов',
   countOrders: 'Всего заказов',
@@ -254,14 +277,17 @@ const fields = {
   priority: 'Приоритет',
   accessOrderType: 'Тип принимаемых заказов',
   commission: 'Комиссия',
+  notes: 'Заметки',
 };
 
-const selectedMessageList = ref<Review[]>([]);
+const selectedMessageList = ref<Review[] | Note[]>([]);
 const drawer = ref<boolean>(false);
 const visibleEditedCommission = ref<boolean>(false);
+const isVisibleNoteField = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
 const commissionAmount = ref<string>('');
 const daysAmount = ref<string>('');
+const note = ref<string>('');
 const error = ref<string>('');
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
@@ -274,14 +300,38 @@ defineOptions({
 const driver = ref<FullDriverInfo>();
 const modal = ref<boolean>(props.modelValue);
 const isLoadingBlocked = ref<boolean>(false);
-const openDrawer = (list: Review[]) => {
+const openDrawer = (list: Review[] | Note[]) => {
   selectedMessageList.value = list;
   drawer.value = true;
 };
-const getTextForMessage = (item: Review) => {
+const getTextForMessage = (item: Review | Note) => {
   if ('orderId' in item) {
     return [`Заказ: ${item.orderId}`, `Текст: ${item.text}`];
   }
+  if ('chatId' in item) {
+    return [item.text];
+  }
+};
+const sendNote = () => {
+  const dto: CreateNoteDto = {
+    chatId: driver.value?.chatId as number,
+    text: note.value,
+  };
+
+  $API.sendNotes(
+    dto,
+    (data: any) => {
+      console.log(data);
+      Notify.create({
+        message: 'Заметка успешно отправлена',
+        color: 'positive',
+        timeout: 1000,
+      });
+      getFullDriverInfo();
+      isVisibleNoteField.value = false;
+    },
+    (e: any) => console.log(e)
+  );
 };
 
 watch(
@@ -447,6 +497,7 @@ const getFullDriverInfo = () => {
   $API.getFullDriverInfo(
     props.chatId,
     (data: FullDriverInfo) => {
+      console.log(data);
       driver.value = data;
     },
     (e: any) => {

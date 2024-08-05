@@ -61,6 +61,7 @@
                   <template v-else-if="key === 'createdAt'">
                     {{ new Date(passenger[key]).toLocaleDateString('ru-RU') }}
                   </template>
+
                   <template v-else-if="key === 'address'">
                     {{ passenger[key].length }}
                     <q-chip
@@ -74,6 +75,41 @@
                     >
                       Посмотреть
                     </q-chip>
+                  </template>
+                  <template v-else-if="key === 'notes'">
+                    {{ passenger[key]?.length }}
+                    <q-chip
+                      v-if="passenger.notes.length"
+                      clickable
+                      color="teal"
+                      dense
+                      icon="visibility"
+                      text-color="white"
+                      @click.stop="openDrawer(passenger.notes)"
+                    >
+                      Посмотреть
+                    </q-chip>
+                    <q-chip
+                      clickable
+                      color="teal"
+                      dense
+                      icon="edit"
+                      text-color="white"
+                      @click.stop="isVisibleNoteField = !isVisibleNoteField"
+                    >
+                      Оставить заметку
+                    </q-chip>
+
+                    <div v-if="isVisibleNoteField" style="max-width: 500px">
+                      <q-input
+                        v-model="note"
+                        filled
+                        label="Заметка"
+                        placeholder="Введите текст заметки"
+                        type="textarea"
+                      />
+                      <q-btn @click="sendNote"> Оставить </q-btn>
+                    </div>
                   </template>
                   <template v-else-if="key === 'leftReview'">
                     {{ passenger[key] }}
@@ -143,6 +179,8 @@ import { FullPassengerInfo } from 'src/types/full-passenger-info.interface';
 import { Review } from 'src/types/review.interface';
 import { EventBus, Notify } from 'quasar';
 import { ModeTable } from 'src/types/mode.table';
+import { Note } from 'src/types/note';
+import { CreateNoteDto } from 'src/types/create-note.dto';
 
 interface Props {
   modelValue: boolean;
@@ -167,14 +205,17 @@ const fields = {
   canceledCount: 'Отменено заказов',
   averageRating: 'Рейтинг',
   receivedReview: 'Получил отзывов',
+  notes: 'Заметки',
 };
 
-const selectedMessageList = ref<Address[] | Review[]>([]);
+const selectedMessageList = ref<Address[] | Review[] | Note[]>([]);
 const drawer = ref<boolean>(false);
 const props = withDefaults(defineProps<Props>(), {
   modelValue: false,
   chatId: 0,
 });
+const isVisibleNoteField = ref<boolean>(false);
+const note = ref<string>('');
 const emit = defineEmits<Emits>();
 defineOptions({
   name: 'ModalPassenger',
@@ -187,12 +228,37 @@ const openDrawer = (list: Address[] | Review[]) => {
   selectedMessageList.value = list;
   drawer.value = true;
 };
-const getTextForMessage = (item: Address | Review) => {
+const getTextForMessage = (item: Address | Review | Note) => {
   if ('address' in item) {
     return [`Название: ${item.name}`, `Адрес: ${item.address}`];
   } else if ('orderId' in item) {
     return [`Заказ: ${item.orderId}`, `Текст: ${item.text}`];
   }
+  if ('chatId' in item) {
+    return [item.text];
+  }
+};
+
+const sendNote = () => {
+  const dto: CreateNoteDto = {
+    chatId: passenger.value?.chatId as number,
+    text: note.value,
+  };
+
+  $API.sendNotes(
+    dto,
+    (data: any) => {
+      console.log(data);
+      Notify.create({
+        message: 'Заметка успешно отправлена',
+        color: 'positive',
+        timeout: 1000,
+      });
+      getFullPassengerInfo();
+      isVisibleNoteField.value = false;
+    },
+    (e: any) => console.log(e)
+  );
 };
 
 watch(

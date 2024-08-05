@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { Admin } from 'src/types/admin.interface';
 import { AddCommissionDto } from 'src/types/add-commission.dto';
 import { SendNewsDto } from 'src/types/sendNews.dto';
+import { CreateNoteDto } from 'src/types/create-note.dto';
 
 const authStore = useUser();
 const { access_token } = storeToRefs(authStore);
@@ -656,6 +657,21 @@ export const $API = {
     this.request(
       'post',
       'newsletter/create',
+      dto,
+      promiseFuncSuccess,
+      promiseFuncFail
+    );
+  },
+
+  /***************************** Notes *****************************/
+  sendNotes: function <S, F>(
+    dto: CreateNoteDto,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'post',
+      'note/create',
       dto,
       promiseFuncSuccess,
       promiseFuncFail

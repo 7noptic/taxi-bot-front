@@ -1,6 +1,7 @@
 import { Order } from 'src/types/order.interface';
 import { Review } from 'src/types/review.interface';
 import { Driver } from 'src/types/driver.interface';
+import { Note } from 'src/types/note';
 
 export interface FullDriverInfo extends Driver {
   reviewFrom: Review[];
@@ -13,4 +14,5 @@ export interface FullDriverInfo extends Driver {
   canceledCount: number;
   averageRating: number;
   orders: Order[];
+  notes: Note[];
 }

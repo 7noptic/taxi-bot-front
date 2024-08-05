@@ -1,6 +1,7 @@
 import { Passenger } from 'src/types/passenger.interface';
 import { Order } from 'src/types/order.interface';
 import { Review } from 'src/types/review.interface';
+import { Note } from 'src/types/note';
 
 export interface FullPassengerInfo extends Passenger {
   reviewFrom: Review[];
@@ -13,4 +14,5 @@ export interface FullPassengerInfo extends Passenger {
   canceledCount: number;
   averageRating: number;
   orders: Order[];
+  notes: Note[];
 }
