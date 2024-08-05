@@ -16,5 +16,5 @@ RUN npm install
 ENV NODE_ENV production
 ENV QUASAR_MODE production
 RUN npm run build
-CMD ["surge", "dist/spa", "taxi-bot-admin.ru", "--email", "7noptic@gmail.com", "--password", "test123"]
+CMD ["surge", "dist/spa", "taxi-bot-admin.ru"]
 
