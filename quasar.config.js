@@ -51,7 +51,7 @@ module.exports = configure(function (/* ctx */) {
     build: {
       target: {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
-        node: 'node18',
+        node: 'node18.17',
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
@@ -108,7 +108,7 @@ module.exports = configure(function (/* ctx */) {
       config: {},
 
       // iconSet: 'material-icons', // Quasar icon set
-      lang: 'ru-RU', // Quasar language pack
+      lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
