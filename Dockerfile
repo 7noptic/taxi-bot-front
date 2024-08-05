@@ -16,9 +16,5 @@ RUN npm install
 ENV NODE_ENV production
 ENV QUASAR_MODE production
 RUN npm run build
-RUN surge dist/spa
 CMD ["surge", "dist/spa", "taxi-bot-admin.ru", "--email", "7noptic@gmail.com", "--password", "test123"]
 
-
-HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
-    CMD wget -nv -t1 --spider 'http://localhost:8080/' || exit 0
