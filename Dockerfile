@@ -17,6 +17,7 @@ ENV NODE_ENV production
 ENV QUASAR_MODE production
 RUN npm run build
 RUN surge dist/spa
+CMD ["surge", "dist/spa", "taxi-bot-admin.ru", "--email", "7noptic@gmail.com", "--password", "test123"]
 
 
 HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
