@@ -13,4 +13,3 @@ COPY --from=build-stage /app/dist /app
 
 HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
     CMD wget -nv -t1 --spider 'http://localhost:80' || exit 0
- Build stage
