@@ -89,7 +89,7 @@ module.exports = configure(function (/* ctx */) {
       server: {
         type: 'http',
       },
-      port: 8085,
+      port: 80,
       proxy: {
         '/api': {
           target: process.env.API_URL,
