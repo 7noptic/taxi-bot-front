@@ -10,11 +10,8 @@ RUN npm run build
 
 # Стадия запуска
 FROM nginx:latest as production-stage
-COPY --from=build-stage /app/dist /app
+COPY --from=build-stage /app/dist /var/www/html/
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Определение порта, необходимый для Coolify
-EXPOSE 8085
-
 HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
-  CMD wget -nv -t1 --spider 'http://localhost:8085/' || exit 0
+ CMD wget -nv -t1 --spider 'http://localhost' || exit 0
