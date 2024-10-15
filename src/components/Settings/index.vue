@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import SettingsCommission from 'src/components/Settings/Commission.vue';
 import SettingsText from 'src/components/Settings/Text.vue';
+import SettingsImages from 'src/components/Settings/Images.vue';
 import TableCity from 'components/Tables/TableCity.vue';
 import { PaginationType, ResponseType } from 'src/types/query.type';
 import { $API } from 'src/plugins/api';
@@ -17,6 +18,7 @@ enum Tabs {
   City = 'city',
   Text = 'text',
   Commission = 'commission',
+  Images = 'images',
 }
 
 const tab = ref<Tabs>(Tabs.City);
@@ -78,6 +80,7 @@ onMounted(async () => {
         <q-tab :name="Tabs.City" icon="apartment" label="Города" />
         <q-tab :name="Tabs.Commission" icon="payments" label="Комиссия" />
         <q-tab :name="Tabs.Text" icon="description" label="Текста" />
+        <q-tab :name="Tabs.Images" icon="image" label="Изображения" />
       </q-tabs>
 
       <q-separator />
@@ -105,6 +108,10 @@ onMounted(async () => {
 
         <q-tab-panel :name="Tabs.Text" class="q-px-none">
           <SettingsText />
+        </q-tab-panel>
+
+        <q-tab-panel :name="Tabs.Images" class="q-px-none">
+          <SettingsImages />
         </q-tab-panel>
       </q-tab-panels>
     </q-card-section>

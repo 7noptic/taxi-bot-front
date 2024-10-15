@@ -16,6 +16,21 @@ import { CreateNoteDto } from 'src/types/create-note.dto';
 const authStore = useUser();
 const { access_token } = storeToRefs(authStore);
 export const $API = {
+  /***************************** Files *****************************/
+  uploadFile: function <S, F>(
+    formData: FormData,
+    promiseFuncSuccess: S,
+    promiseFuncFail: F
+  ) {
+    this.request(
+      'post',
+      'files/upload',
+      formData,
+      promiseFuncSuccess,
+      promiseFuncFail,
+      { 'Content-Type': 'multipart/form-data' }
+    );
+  },
   /***************************** PASSENGER *****************************/
   getAllPassengers: function <S, F>(promiseFuncSuccess: S, promiseFuncFail: F) {
     this.request(
@@ -683,12 +698,14 @@ export const $API = {
     path: string,
     data: any,
     promiseFuncSuccess: any,
-    promiseFuncFail: any
+    promiseFuncFail: any,
+    advHeaders?: Record<string, string>
   ) {
     const config = {
       params: {},
       headers: {
         Authorization: 'Bearer ' + access_token.value,
+        ...advHeaders,
       },
     };
 
