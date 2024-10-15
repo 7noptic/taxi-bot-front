@@ -1,3 +1,4 @@
+FROM node:18-alpine AS build-stage
 WORKDIR /app
 COPY package*.json ./
 COPY . .
@@ -5,6 +6,7 @@ RUN npm install
 ENV NODE_ENV production
 ENV QUASAR_MODE production
 RUN npm run dev
+
 FROM nginx as production-stage
 COPY --from=build-stage /app/dist /app
 COPY nginx.conf /etc/nginx/nginx.conf
